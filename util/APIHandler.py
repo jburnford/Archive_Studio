@@ -24,6 +24,13 @@ from google.genai import types
 # Import ErrorLogger
 from util.ErrorLogger import log_error
 
+# Document AI
+try:
+    from util.DocumentAIHandler import document_ai_handler
+except ImportError as e:
+    print(f"Warning: Could not import Document AI handler: {e}")
+    document_ai_handler = None
+
 class APIHandler:
     def __init__(self, openai_api_key, anthropic_api_key, google_api_key, app=None):
         self.openai_api_key = openai_api_key
@@ -88,6 +95,11 @@ class APIHandler:
                                               image_data, text_to_process, val_text, 
                                               engine, index, is_base64, formatting_function, 
                                               api_timeout, job_type, required_headers)
+        elif "document_ai" in engine.lower() or "documentai" in engine.lower():
+            return await self.handle_document_ai_call(system_prompt, user_prompt, temp, 
+                                                   image_data, text_to_process, val_text, 
+                                                   engine, index, is_base64, formatting_function, 
+                                                   api_timeout, job_type, required_headers)
         else:
             raise ValueError(f"Unsupported engine: {engine}")
     
@@ -515,3 +527,54 @@ class APIHandler:
         except Exception as e:
             self.log_error(f"Error encoding image", f"Path: {image_path}, Error: {str(e)}")
             return None
+
+    async def handle_document_ai_call(self, system_prompt, user_prompt, temp, 
+                                    image_data, text_to_process, val_text, 
+                                    engine, index, is_base64, formatting_function, 
+                                    api_timeout, job_type, required_headers):
+        """Handle Document AI API calls for OCR/HTR"""
+        try:
+            # Check if Document AI handler is available
+            if document_ai_handler is None:
+                return "Error: Document AI not available. Please check your installation."
+            
+            # Check if Document AI is properly configured
+            if not document_ai_handler.is_configured():
+                return "Error: Document AI not configured. Please set up Document AI credentials in Settings."
+            
+            # Document AI only processes images, not text prompts
+            if not image_data:
+                return "Error: Document AI requires an image to process"
+            
+            # Get the first image from image_data
+            if isinstance(image_data, list) and len(image_data) > 0:
+                if isinstance(image_data[0], tuple):
+                    # Format: [(image_path, label), ...]
+                    image_path = image_data[0][0]
+                else:
+                    # Format: [image_path, ...]
+                    image_path = image_data[0]
+            else:
+                # Single image path
+                image_path = image_data
+            
+            # Validate image path exists
+            if not os.path.exists(image_path):
+                return f"Error: Image file not found: {image_path}"
+            
+            # Process image with Document AI
+            result = document_ai_handler.process_image(image_path)
+            
+            if result is None:
+                return "Error: Document AI processing failed"
+            
+            # Format result according to val_text if specified
+            if val_text and val_text.strip():
+                return f"{val_text.strip()}\n{result}"
+            else:
+                return result
+                
+        except Exception as e:
+            error_msg = f"Document AI call failed: {str(e)}"
+            log_error(error_msg)
+            return f"Error: {error_msg}"

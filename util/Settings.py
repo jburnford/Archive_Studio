@@ -48,7 +48,7 @@ class Settings:
         self.chunk_text_presets = [
             {
                 "name": "Letterbook",
-                "model": "gemini-2.0-flash",
+                "model": "gemini-2.5-pro",
                 "temperature": "0.2",
                 "general_instructions": f'''You are an expert in historical document analysis. You will be provided with a historical document with numbered lines. These letterbooks contain a series of letters transcribed sequentially by a scribe, and letters may span multiple pages.
 
@@ -86,7 +86,7 @@ Your objective is to ensure that break markers are inserted only when a new lett
             },
             {
                 "name": "Diary",
-                "model": "gemini-2.0-flash",
+                "model": "gemini-2.5-pro",
                 "temperature": "0.2",
                 "general_instructions": f'''You are an expert in historical document analysis. You will receieve a page from a historical diary with numbered lines. Your task is to identify the line numbers on which each new diary entry begins (including the first text on the page if it begins on this page). To do this accurately, follow these guidelines:
 
@@ -121,7 +121,7 @@ Your objective is to preserve the original diary structure as accurately as poss
             },
             {
                 "name": "Parish Register",
-                "model": "gemini-2.0-flash",
+                "model": "gemini-2.5-pro",
                 "temperature": "0.2",
                 "general_instructions": '''You are an expert in historical document analysis, specialized in identifying boundaries between distinct entries in a parish register of baptisms marriages, and burials. When presented with transcribed text with numbered lines, your task is to identify where new entries begin.
 
@@ -140,7 +140,7 @@ These are the line numbers where a document separator should be placed immediate
         self.function_presets = [
             {
                 'name': "HTR",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.3",
                 'general_instructions': '''Your task is to accurately transcribe handwritten historical documents, minimizing the CER and WER. Work character by character, word by word, line by line, transcribing the text exactly as it appears on the page. To maintain the authenticity of the historical text, retain spelling errors, grammar, syntax, and punctuation as well as line breaks. Transcribe all the text on the page including headers, footers, marginalia, insertions, page numbers, etc. If these are present, insert them where indicated by the author (as applicable). In your response, write: "Transcription:" followed only by your accurate transcription''',
                 'specific_instructions': '''Carefully transcribe this page from an 18th/19th century document. In your response, write: "Transcription:" followed only by your accurate transcription.''',
@@ -151,8 +151,32 @@ These are the line numbers where a document separator should be placed immediate
                 'val_text': "Transcription:"
             },
             {
+                'name': "HTR_DocumentAI",
+                'model': "document_ai_handwriting",
+                'temperature': "0.0",
+                'general_instructions': '''Google Document AI processor for handwritten text recognition. This uses specialized machine learning models trained specifically for historical document OCR and handwriting recognition.''',
+                'specific_instructions': '''Process this historical document image for handwritten text recognition.''',
+                'use_images': True,
+                'current_image': "Yes",
+                'num_prev_images': "0",
+                'num_after_images': "0",
+                'val_text': ""
+            },
+            {
+                'name': "OCR_DocumentAI",
+                'model': "document_ai_ocr",
+                'temperature': "0.0",
+                'general_instructions': '''Google Document AI processor for optical character recognition (OCR) of printed text. This uses specialized machine learning models trained specifically for document text extraction.''',
+                'specific_instructions': '''Process this document image for optical character recognition (OCR).''',
+                'use_images': True,
+                'current_image': "Yes",
+                'num_prev_images': "0",
+                'num_after_images': "0",
+                'val_text': ""
+            },
+            {
                 'name': "Correct_Text",
-                'model': "claude-3-7-sonnet-20250219",
+                'model': "claude-sonnet-4-20250514",
                 'temperature': "0.2",
                 'general_instructions': '''Your task is to compare handwritten pages of text with corresponding draft transcriptions, correcting the transcription to produce an accurate, publishable transcript. Be sure that the spelling, syntax, punctuation, and line breaks in the transcription match those on the handwritten page to preserve the historical integrity of the document. Numbers also easily misread, so pay close attention to digits. You must also ensure that the transcription begins and ends in the same place as the handwritten document. Include any catchwords at the bottom of the page. In your response write "Corrected Transcript:" followed by your corrected transcription.''',
                 'specific_instructions': '''Your task is to use the handwritten page image to correct the following transcription, retaining the spelling, syntax, punctuation, line breaks, catchwords, etc of the original.\n\n{text_to_process}''',
@@ -164,7 +188,7 @@ These are the line numbers where a document separator should be placed immediate
             },
             {
                 'name': "Identify_Errors",
-                'model': "claude-3-7-sonnet-20250219",
+                'model': "claude-sonnet-4-20250514",
                 'temperature': "0.2",
                 'general_instructions': '''Your task is to compare draft transcriptions with the original handwritten document. You will identify all the single words and multiple-word phrases exactly as written in the transcription where you are less than 90% certain the transcription is correct. In your response, write "Errors:" followed by a semi-colon delineated list of all the errors you have identified.''',
                 'specific_instructions': '''Here is the text to analyze:\n\n{text_to_process}''',
@@ -227,7 +251,7 @@ If you don't have information for a heading or don't know, leave it blank.''',
 
             {
                 'name': "Auto_Rotate",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.0",
                 'general_instructions': '''Draw a bounding box around the first line of text on the page. In your analysis include titles, headers, paragraphs, etc.''',
                 'specific_instructions': "",
@@ -239,7 +263,7 @@ If you don't have information for a heading or don't know, leave it blank.''',
             },
             {
                 'name': "Translation",
-                'model': "claude-3-7-sonnet-20250219",
+                'model': "claude-sonnet-4-20250514",
                 'temperature': "0.2",
                 'general_instructions': '''You translate historical documents from other languages into English. In your response, write "Translation:" followed by a faithful, accurate translation of the document.''',
                 'specific_instructions': '''Text to translate:\n\n{text_to_process}''',
@@ -255,7 +279,7 @@ If you don't have information for a heading or don't know, leave it blank.''',
         self.analysis_presets = [
             {
                 'name': "Relevance",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.3",
                 'general_instructions' : '''You provide expert historical analysis. You examine a historical document and evaluate whether it meets the relevance criteria specified by a user. That criteria might include subjective factors such as whether the given document might be relevant to a particular research question or theme, or objective factors such as whether the document fits specific temporal or geographic requirements. Read the user's instructions, then the document provided, and determine whether the document fits the user's relevance criteria or not. Provide a confidence level for your judgement where 100% means absolute certainty. \n\nYou must end your response by writing: "Relevance:" followed by "Relevant", "Partially Relevant", "Irrelevant", or "Uncertain".''',
                 'specific_instructions': '''Use the following criteria to determine the level of relevance of a given document:\n\n {query_text}. \n\n Here is the document to analyze:\n\n{text_to_process}''',
@@ -311,7 +335,7 @@ Smith = Smihh; Smethh""",
             },
             {
                 'name': "Bounding_Boxes",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.0",
                 'top-p' : "0.95",
                 'structured_output' : True,
@@ -325,7 +349,7 @@ Smith = Smihh; Smethh""",
             },
             {
                 'name': "Bounding_Boxes_By_Row",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.0",
                 'top-p' : "0.95",
                 'structured_output' : True,
@@ -342,7 +366,7 @@ Smith = Smihh; Smethh""",
         self.format_presets = [
             {
                 'name': "Parish_Record",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.2",
                 'general_instructions': '''You re-format historical documents to make them easier to read while retaining the original text. Remove all page numbers, headers, footers, archival stamps/references, etc. Remove all line breaks and other formatting. When identifying information is present in the margins, move this to a title line above the main record,In your response, write "Formatted Text:" followed by a formatted version of the document.''',
                 'specific_instructions': '''Text to format:\n\n{text_to_process}''',
@@ -355,7 +379,7 @@ Smith = Smihh; Smethh""",
 
             {
                 'name': "Diary",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.2",
                 'general_instructions': '''You re-format historical documents to make them easier to read while retaining the original text. Remove all page numbers, headers, footers, archival stamps/references, etc. Remove all line breaks and other formatting. Ensure that each entry is starts on a new line and that they are separated by a blank line. Include any marginalia at the end of the entry in square brackets with the notation "Marginalia:". In your response, write "Formatted Text:" followed by a formatted version of the document.''',
                 'specific_instructions': '''Text to format:\n\n{text_to_process}''',
@@ -367,7 +391,7 @@ Smith = Smihh; Smethh""",
             },
             {
                 'name': "Letter",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.2",
                 'general_instructions': '''You re-format historical documents to make them easier to read while retaining the original text. Remove all page numbers, headers, footers, archival stamps/references, etc. Remove all line breaks and other formatting. For the text in the heading and/or salutation (ie above the main body of the letter), order the material in this way (where applicable): place the letter was written, date, salutation. Follow this with the body of the letter. Include any marginalia on a separate line at the end of the paragraph encased in square brackets beginning with "Marginalia:". For the valediction/complementary close, order material as follows (where applicable): complementary close, signature, place/address, date. In your response, write "Formatted Text:" followed by a formatted version of the document.''',
                 'specific_instructions': '''Text to format:\n\n{text_to_process}''',
@@ -382,7 +406,7 @@ Smith = Smihh; Smethh""",
         self.relevance_presets = [
             {
                 'name': "Relevance",
-                'model': "gemini-2.0-flash",
+                'model': "gemini-2.5-pro",
                 'temperature': "0.3",
                 'general_instructions' : '''You provide expert historical analysis. You examine a historical document and evaluate whether it meets the relevance criteria specified by a user. That criteria might include subjective factors such as whether the given document might be relevant to a particular research question or theme, or objective factors such as whether the document fits specific temporal or geographic requirements. Read the user's instructions, then the document provided, and determine whether the document fits the user's relevance criteria or not. Provide a confidence level for your judgement where 100% means absolute certainty. \n\nYou must end your response by writing: "Relevance:" followed by "Relevant", "Partially Relevant", "Irrelevant", or "Uncertain".''',
                 'specific_instructions': '''Use the following criteria to determine the level of relevance of a given document:\n\n {query_text}. \n\n Here is the document to analyze:\n\n{text_to_process}''',
@@ -474,17 +498,27 @@ Current Diary Entry to Analyze: {text_to_process}''',
         
         self.model_list = [
             "gpt-4o",
-            "gpt-4.5-preview",
+            "gpt-4.5-preview", 
+            "claude-sonnet-4-20250514",
             "claude-3-5-sonnet-20241022",
             "claude-3-7-sonnet-20250219",
+            "gemini-2.5-pro",
             "gemini-2.0-flash",
-            "gemini-2.5-pro-exp-03-25"
+            "gemini-pro",
+            "document_ai_ocr",
+            "document_ai_handwriting"
         ]
 
         # Restore API keys
         self.openai_api_key = saved_openai_key
         self.anthropic_api_key = saved_anthropic_key
         self.google_api_key = saved_google_key
+        
+        # Document AI Settings
+        self.document_ai_credentials = ""  # JSON credentials for service account
+        self.document_ai_project_id = ""   # Google Cloud project ID
+        self.document_ai_location = "us"   # Document AI location (us, eu, asia)
+        self.document_ai_processor_id = "" # Optional specific processor ID
 
         # Default metadata settings - keep for backward compatibility
         self.metadata_model = "claude-3-5-sonnet-20241022"
@@ -519,12 +553,12 @@ If you don't have information for a heading or don't know, leave it blank.'''
         self.translation_system_prompt = "You translate historical documents from other languages into English. In your response, write 'Translation:' followed by a faithful, accurate translation of the document."
         self.translation_user_prompt = "Text to translate:\n\n{text_to_process}"
         self.translation_val_text = "Translation:"
-        self.translation_model = "claude-3-7-sonnet-20250219"
+        self.translation_model = "claude-sonnet-4-20250514"
 
         # --- Add robust default initialization for query settings ---
         self.query_system_prompt = "You answer questions about historical documents. In your response, write 'Answer:' followed by a concise, accurate answer to the user's question."
         self.query_val_text = "Answer:"
-        self.query_model = "claude-3-7-sonnet-20250219"
+        self.query_model = "claude-sonnet-4-20250514"
 
     def save_settings(self):
         settings = {
@@ -557,6 +591,12 @@ If you don't have information for a heading or don't know, leave it blank.'''
             'query_val_text': self.query_val_text,
             'query_model': self.query_model,
             'sequential_batch_size': self.sequential_batch_size,                     # Sequential Batch Size
+            
+            # Document AI Settings
+            'document_ai_credentials': self.document_ai_credentials,
+            'document_ai_project_id': self.document_ai_project_id,
+            'document_ai_location': self.document_ai_location,
+            'document_ai_processor_id': self.document_ai_processor_id,
         }
         
         with open(self.settings_file_path, 'w') as f:
